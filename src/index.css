@@ -1,0 +1,186 @@
+/* stylelint-disable at-rule-no-unknown */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Space Grotesk", "Fira Code", monospace;
+
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  --color-border: var(--border-color);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-hover: var(--accent-hover);
+
+  --color-dark-bg-primary: #0A0A0A;
+  --color-light-bg-primary: #FFFFFF;
+
+  --animate-fade-in-up: fade-in-up 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  --animate-glow: glow 2s infinite ease-in-out;
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 148, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(0, 255, 148, 0.4); }
+}
+
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+:root {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1A1A1A;
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #B3B3B3;
+  --text-tertiary: #666666;
+  
+  --border-color: #2A2A2A;
+  
+  --accent-primary: #00FF94;
+  --accent-secondary: #00D67D;
+  --accent-hover: #00B869;
+
+  --card-shadow: 0 4px 24px rgba(0, 255, 148, 0.08);
+}
+
+@layer utilities {
+  .text-hollow {
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.4);
+    color: transparent;
+    transition: -webkit-text-stroke 0.3s ease, color 0.3s ease;
+  }
+  
+  .text-hollow:hover {
+    -webkit-text-stroke: 2px var(--accent-primary);
+    color: transparent;
+  }
+  
+  .text-hollow-thick {
+    -webkit-text-stroke: 4px rgba(255, 255, 255, 0.4);
+    color: transparent;
+    transition: -webkit-text-stroke 0.3s ease, color 0.3s ease;
+  }
+
+  .text-hollow-thick.solid {
+    -webkit-text-stroke: 4px transparent;
+    color: white;
+  }
+}
+
+@utility text-hero {
+  font-size: 12vw;
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+@utility text-section {
+  font-size: 8vw;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  @media (min-width: 768px) {
+    font-size: 6vw;
+  }
+  @media (min-width: 1024px) {
+    font-size: 100px;
+  }
+}
+
+@utility text-subsection {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+@utility text-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+  }
+}
+
+@utility text-body-lg {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+@utility text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+@utility text-body-sm {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+@utility text-caption {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: transparent;
+  cursor: none;
+}
+
+body {
+  background-color: #050505; /* Base color sitting behind the canvas */
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  cursor: none;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: transparent;
+}
+
+@media (pointer: fine) {
+  *, body, a, button, input, textarea, select {
+    cursor: none !important;
+  }
+}
+
