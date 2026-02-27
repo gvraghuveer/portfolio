@@ -1,6 +1,7 @@
 import { Github, Linkedin, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { useRef, useState, FormEvent } from 'react';
+import { useRef, useState } from 'react';
+import type { FormEvent } from 'react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
