@@ -5,12 +5,13 @@ A modern, interactive personal portfolio website designed to showcase my project
 ## 🚀 Features
 
 - **Immersive 3D Background**: Custom WebGL geometry built with React Three Fiber.
+- **Animated Preloader**: Custom percent-counter loading screen synced with the application initialization.
 - **Modern UI/UX**: Dark mode aesthetic with neon green accents (`#00FF94`) and glassmorphism containers.
-- **Interactive Navigation**: Smooth scrolling, morphing top-dock navigation, and custom active state indicators.
+- **Interactive Navigation**: Smooth scrolling, morphing top-dock navigation on desktop, and a sleek animated hamburger menu on mobile.
 - **Custom Cursor**: A unique, global custom cursor replacing the default browser pointer.
-- **Projects Showcase**: Sleek card layout for projects with hover effects and direct links to GitHub and Live Demos.
+- **Swipeable Carousels**: Interactive Framer Motion carousels for the Projects and Certifications sections with drag-to-scroll support.
 - **Functional Contact Form**: Integrated with FormSubmit for silent, AJAX-based email delivery (no custom backend required).
-- **Fully Responsive**: Optimized for both desktop and mobile viewing with a dedicated mobile menu.
+- **Fully Responsive**: Optimized for both desktop and mobile viewing.
 
 ## 🛠️ Tech Stack
 
@@ -37,7 +38,7 @@ A modern, interactive personal portfolio website designed to showcase my project
 
 2. **Navigate to the app directory:**
    ```bash
-   cd portfolio/portfolio-app
+   cd portfolio
    ```
 
 3. **Install dependencies:**
