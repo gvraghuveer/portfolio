@@ -2,6 +2,7 @@ import { Github, Linkedin, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import InteractiveCaptcha from './InteractiveCaptcha';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -10,6 +11,7 @@ export default function Footer() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ export default function Footer() {
   };
 
   return (
-    <footer id="contact" ref={ref} className="relative w-full px-6 md:px-12 pt-8 pb-8 max-w-[1100px] mx-auto">
+    <footer id="contact" ref={ref} className="relative w-full px-6 md:px-12 pt-8 pb-16 max-w-[1100px] mx-auto">
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden">
 
         {/* Contact Form & Info Section */}
@@ -65,7 +67,6 @@ export default function Footer() {
             >
               <input type="hidden" name="_subject" value="New Portfolio Contact Message" />
               <input type="hidden" name="_template" value="box" />
-              <input type="hidden" name="_captcha" value="false" />
 
               <AnimatePresence>
                 {isSuccess && (
@@ -73,28 +74,31 @@ export default function Footer() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-[#0A0A0A]/90 backdrop-blur-md rounded-2xl border border-white/10"
+                    className="absolute inset-0 z-50 flex items-center justify-center p-4"
                   >
+                    {/* Darker backdrop to hide the inputs behind */}
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md rounded-2xl" />
+
                     <motion.div
                       initial={{ scale: 0.9, opacity: 0, y: 20 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
                       exit={{ scale: 0.9, opacity: 0, y: 20 }}
                       transition={{ type: "spring", bounce: 0.4 }}
-                      className="flex flex-col items-center justify-center text-center w-full"
+                      className="relative z-10 flex flex-col items-center justify-center text-center w-full px-6"
                     >
-                      <div className="w-16 h-16 rounded-full bg-[#00FF94]/10 flex items-center justify-center mb-4">
+                      <div className="w-16 h-16 rounded-full bg-[#00FF94]/10 flex items-center justify-center mb-6 border border-[#00FF94]/20">
                         <CheckCircle2 size={32} className="text-[#00FF94]" />
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Message Sent!</h3>
-                      <p className="text-white/60 text-sm leading-relaxed mb-6">
-                        Thanks for reaching out!
+                      <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Message Sent!</h3>
+                      <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-[240px]">
+                        Thanks for reaching out! I'll get back to you soon.
                       </p>
                       <button
                         type="button"
                         onClick={() => setIsSuccess(false)}
-                        className="py-2.5 px-8 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold tracking-wide transition-colors border border-white/10"
+                        className="py-3 px-10 bg-[#00FF94] text-black rounded-full font-bold text-xs uppercase tracking-wider hover:bg-white transition-all duration-300 shadow-[0_0_20px_rgba(0,255,148,0.2)]"
                       >
-                        Close
+                        Great!
                       </button>
                     </motion.div>
                   </motion.div>
@@ -137,12 +141,14 @@ export default function Footer() {
                 />
               </div>
 
+              <InteractiveCaptcha onVerify={setIsVerified} />
+
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isVerified}
                 className={`w-full md:w-fit bg-[#00FF94] text-black font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full 
                          transition-all duration-300 mt-2
-                         ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white'}`}
+                         ${(isSubmitting || !isVerified) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white'}`}
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </button>
