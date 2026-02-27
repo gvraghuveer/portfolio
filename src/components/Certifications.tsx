@@ -1,12 +1,15 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
+import pdsImg from '../assets/certificates/PDS.jpg';
+import dapImg from '../assets/certificates/DAP.jpg';
+import dvpImg from '../assets/certificates/DVP.jpg';
 
 const certificationsData = [
     {
         title: 'Python 101 for Data Science',
         description: 'Achieved IBM Skills Network foundational certification in Python for Data Science. This course established core Python programming skills specifically for data science applications, covering Python basics, data structures, libraries (NumPy, Pandas), and fundamental programming concepts. Built a strong foundation for applying Python to real-world data science problems and analytics workflows.',
-        image: '/src/assets/certificates/PDS.jpg',
+        image: pdsImg,
         tags: ['Data Science', 'Python', 'Pandas'],
         issuer: 'IBM',
         date: '23/11/2025',
@@ -15,7 +18,7 @@ const certificationsData = [
     {
         title: 'Data Analysis With Python',
         description: 'Completed IBM Skills Network certification in Data Analysis Using Python. This intermediate-level course covered essential data analysis techniques including data manipulation with Pandas, exploratory data analysis, data wrangling, and statistical analysis. Demonstrated proficiency in using Python libraries to extract insights from datasets, perform data cleaning, and create meaningful visualizations for data-driven decision making.',
-        image: '/src/assets/certificates/DAP.jpg',
+        image: dapImg,
         tags: ['Data Analysis', 'Python', 'Jupyter'],
         issuer: 'IBM',
         date: '23/11/2025',
@@ -24,7 +27,7 @@ const certificationsData = [
     {
         title: 'Data Visualization With Python',
         description: 'Earned IBM Skills Network certification in Data Visualization Using Python. This intermediate-level course focused on creating impactful visual representations of data using Python libraries such as Matplotlib, Seaborn, and Folium. Developed skills in building various chart types, interactive dashboards, and geospatial visualizations to effectively communicate complex data insights and patterns.',
-        image: '/src/assets/certificates/DVP.jpg',
+        image: dvpImg,
         tags: ['Data Visualization', 'Matplotlib', 'Seaborn'],
         issuer: 'IBM',
         date: '27/11/2025',

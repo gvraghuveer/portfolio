@@ -1,12 +1,16 @@
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
+import chatAppImg from '../assets/projects/chat-app.jpg';
+import expenseTrackerImg from '../assets/projects/expense-tracker.jpg';
+import fsdcManagerImg from '../assets/projects/fsdc-manager.jpg';
+import fsdcImg from '../assets/projects/fsdc.jpg';
 
 const projects = [
   {
     title: 'Real-time Chat App',
     description: 'A real-time messaging application built with the MERN stack and Socket.IO. It features user authentication via JWT, instant messaging capabilities, secure backend APIs, and a responsive React-based UI. The app stores user data and messages in MongoDB and uses Cloudinary for media handling. Designed as a learning project, it demonstrates full-stack development fundamentals with clean, functional chat room capabilities.',
-    image: 'src/assets/projects/chat-app.jpg',
+    image: chatAppImg,
     tags: ['React', 'Node.js', 'MongoDB', 'Socket.IO'],
     github: 'https://github.com/gvraghuveer/chat-app',
     // demo: '#',
@@ -14,7 +18,7 @@ const projects = [
   {
     title: 'Expense Tracker',
     description: 'A full-stack web application for managing personal finances by tracking income and expenses. Built with React (Vite) on the frontend and Node.js/Express on the backend, it uses MongoDB for data persistence and JWT for authentication. The app features transaction management (add, edit, delete), filtering and categorization, income/expense totals, and a responsive UI. With a clean, modular backend structure and environment variable configuration, this project demonstrates practical full-stack development skills with improvements over its tutorial foundation.',
-    image: 'src/assets/projects/expense-tracker.jpg',
+    image: expenseTrackerImg,
     tags: ['React', 'Node.js', 'MongoDB', 'JWT'],
     github: 'https://github.com/gvraghuveer/expense-tracker',
     demo: 'https://expense-tracker-static.onrender.com/'
@@ -22,7 +26,7 @@ const projects = [
   {
     title: 'FSDC Manager',
     description: 'A task management web application built for the Full Stack Development Club. Developed with Next.js 16 and TypeScript, it features modern tooling including Tailwind CSS for styling, shadcn/ui components, and Resend for email functionality. The application provides task organization capabilities with a clean, type-safe architecture using custom hooks, stores, and utilities. Deployed on Vercel, it demonstrates contemporary full-stack development practices with Next.js App Router, middleware implementation, and email integration for club activity management.',
-    image: 'src/assets/projects/fsdc-manager.jpg',
+    image: fsdcManagerImg,
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Resend'],
     github: 'https://github.com/gvraghuveer/fsdc-manager',
     demo: 'https://fsdc-manager.vercel.app/'
@@ -30,7 +34,7 @@ const projects = [
   {
     title: 'Full Stack Development Club',
     description: `The official web presence for the Full Stack Development Club. Forked from the original club repository, this frontend-focused project is built primarily with JavaScript (97.2%), CSS, and HTML. The website serves as the club's digital hub, providing information about the organization, its activities, and resources for members. As a collaborative effort within the club, it demonstrates practical web development skills and serves the community's online presence needs.`,
-    image: 'src/assets/projects/fsdc.jpg',
+    image: fsdcImg,
     tags: ['JavaScript', 'TailwindCSS', 'React'],
     github: 'https://github.com/gvraghuveer/fsdc-official-website',
     // demo: '#'

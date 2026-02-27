@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import MagneticButton from './MagneticButton';
+import profilePic from '../assets/gvraghs-pro.png';
 
 export default function Hero() {
   const ref = useRef(null);
@@ -88,7 +89,7 @@ export default function Hero() {
         >
           <div className="w-[200px] h-[200px] sm:w-[250px] sm:h-[250px] md:w-[320px] md:h-[320px] rounded-full overflow-hidden border-2 border-white/15 shadow-[0_0_60px_rgba(0,255,148,0.1)]">
             <img
-              src="/src/assets/gvraghs-pro.png"
+              src={profilePic}
               alt="G V Raghuveer"
               className="w-full h-full object-cover"
             />
