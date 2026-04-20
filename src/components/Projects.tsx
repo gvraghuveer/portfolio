@@ -5,8 +5,26 @@ import chatAppImg from '../assets/projects/chat-app.jpg';
 import expenseTrackerImg from '../assets/projects/expense-tracker.jpg';
 import fsdcManagerImg from '../assets/projects/fsdc-manager.jpg';
 import fsdcImg from '../assets/projects/fsdc.jpg';
+import avengersDbImg from '../assets/projects/avengers-db.png';
+import elevatexImg from '../assets/projects/elevatex.png';
 
 const projects = [
+  {
+    title: 'ElevateX',
+    description: "A cloud infrastructure optimization platform UI/UX demo. Features a premium 'Night Obsidian' glassmorphic dark mode, interactive dashboard mockups for cloud resource monitoring, and an ROI calculator. Built with Next.js and Tailwind CSS to demonstrate a modern, sleek enterprise aesthetic.",
+    image: elevatexImg,
+    tags: ['Next.js', 'Tailwind CSS', 'Framer Motion', 'Cloud UI'],
+    github: 'https://github.com/gvraghuveer/elevateX',
+    demo: 'https://elevatex-cloud.vercel.app/'
+  },
+  {
+    title: 'The Avengers Database',
+    description: 'A high-fidelity, cinematic archival interface for the Marvel Cinematic Universe. Track your progress across phases, explore the Sacred Timeline, and manage your ultimate MCU watchlist. Built with Next.js 14 and Framer Motion for a premium dark-mode aesthetic, featuring real-time data from TMDB API.',
+    image: avengersDbImg,
+    tags: ['Next.js', 'Framer Motion', 'Tailwind CSS', 'TMDB API'],
+    github: 'https://github.com/gvraghuveer/avengers-watchlist',
+    demo: 'https://avengers-watchlist.vercel.app/'
+  },
   {
     title: 'Real-time Chat App',
     description: 'A real-time messaging application built with the MERN stack and Socket.IO. It features user authentication via JWT, instant messaging capabilities, secure backend APIs, and a responsive React-based UI. The app stores user data and messages in MongoDB and uses Cloudinary for media handling. Designed as a learning project, it demonstrates full-stack development fundamentals with clean, functional chat room capabilities.',
@@ -29,7 +47,7 @@ const projects = [
     image: fsdcManagerImg,
     tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Resend'],
     github: 'https://github.com/gvraghuveer/fsdc-manager',
-    demo: 'https://fsdc-manager.vercel.app/'
+    // demo: 'https://fsdc-manager.vercel.app/'
   },
   {
     title: 'Full Stack Development Club',
