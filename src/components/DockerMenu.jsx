@@ -25,6 +25,7 @@ export function DockerMenu({
   const [activeSection, setActiveSection] = useState("hero");
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [bouncingId, setBouncingId] = useState(null);
+  const [toggleNotice, setToggleNotice] = useState(null);
 
   const dockItems = [
     {
@@ -148,11 +149,22 @@ export function DockerMenu({
   };
 
   const handleAnimationsClick = () => {
+    const nextState = !animationsEnabled;
     setBouncingId("animations");
+
+    const noticeId = Date.now();
+    setToggleNotice({
+      mode: nextState ? "on" : "off",
+      id: noticeId,
+    });
 
     window.setTimeout(() => {
       setBouncingId(null);
     }, 550);
+
+    window.setTimeout(() => {
+      setToggleNotice((curr) => (curr?.id === noticeId ? null : curr));
+    }, 2400);
 
     toggleAnimations();
   };
@@ -170,6 +182,54 @@ export function DockerMenu({
         pointer-events-auto
       "
     >
+      {/* ========================================================
+          FLOATING MODE STATUS HUD TOAST
+      ======================================================== */}
+      {toggleNotice && (
+        <div
+          className={`
+            pointer-events-none
+            absolute
+            -top-12
+            left-1/2
+            -translate-x-1/2
+            z-50
+            flex
+            items-center
+            gap-2
+            whitespace-nowrap
+            rounded-full
+            px-4
+            py-1.5
+            text-[11px]
+            font-semibold
+            shadow-2xl
+            backdrop-blur-xl
+            transition-all
+            duration-300
+            animate-bounce
+            border
+            ${
+              toggleNotice.mode === "on"
+                ? "border-cyan-400/40 bg-[#0b1329]/95 text-cyan-300 shadow-[0_0_30px_rgba(6,182,212,0.45)]"
+                : "border-emerald-400/40 bg-[#091512]/95 text-emerald-300 shadow-[0_0_30px_rgba(16,185,129,0.4)]"
+            }
+          `}
+        >
+          {toggleNotice.mode === "on" ? (
+            <>
+              <Sparkles className="size-3.5 text-cyan-400 animate-spin" style={{ animationDuration: "3s" }} />
+              <span>High Graphics Enabled (Liquid WebGL)</span>
+            </>
+          ) : (
+            <>
+              <ZapOff className="size-3.5 text-emerald-400" />
+              <span>Performance Mode: Aurora Borealis (Zero Lag)</span>
+            </>
+          )}
+        </div>
+      )}
+
       {/* ========================================================
           MAIN DOCK
       ======================================================== */}
@@ -618,7 +678,7 @@ export function DockerMenu({
               dark:text-neutral-200
             `}
           >
-            {animationsEnabled ? "Animations: ON (Smooth)" : "Animations: OFF (Fast / Low Lag)"}
+            {animationsEnabled ? "Graphics: Liquid WebGL" : "Performance Mode: Aurora (Lag-Free)"}
 
             <div
               className="
@@ -674,7 +734,7 @@ export function DockerMenu({
 
               ${
                 bouncingId === "animations"
-                  ? "animate-dock-bounce"
+                  ? "animate-dock-bounce scale-110"
                   : ""
               }
             `}
@@ -682,11 +742,11 @@ export function DockerMenu({
             {animationsEnabled ? (
               <span className="relative flex items-center justify-center">
                 <Sparkles className="h-[17px] w-[17px] text-cyan-500 transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" />
-                <span className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-cyan-400 ring-2 ring-white dark:ring-[#090d17]" />
+                <span className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-cyan-400 ring-2 ring-white dark:ring-[#090d17] animate-pulse" />
               </span>
             ) : (
               <span className="relative flex items-center justify-center">
-                <ZapOff className="h-[17px] w-[17px] text-neutral-400 transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" />
+                <ZapOff className="h-[17px] w-[17px] text-emerald-500 dark:text-emerald-400 transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" />
               </span>
             )}
 

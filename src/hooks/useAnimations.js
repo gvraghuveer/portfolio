@@ -7,12 +7,9 @@ export function useAnimations() {
       if (saved !== null) {
         return saved === "true";
       }
-      // If user has system preference for reduced motion, start disabled
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        return false;
-      }
     }
-    return true;
+    // Default to without animations (performance mode) as requested
+    return false;
   });
 
   useEffect(() => {

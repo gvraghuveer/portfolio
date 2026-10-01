@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Aurora from "./Aurora";
 
 const VERTEX_SHADER = `
   attribute vec2 position;
@@ -136,13 +137,23 @@ const FRAGMENT_SHADER = `
   }
 `;
 
+/**
+ * FluidCanvas – always mounts the WebGL canvas in the DOM.
+ * The animation loop is STARTED or PAUSED based on the `enabled` prop.
+ * Both the static and WebGL layers are always present; we cross-fade via opacity.
+ */
 function FluidCanvas({ enabled = true }) {
-  const canvasRef = useRef(null);
+  const canvasRef  = useRef(null);
+  const glRef      = useRef(null);   // holds WebGL context across renders
+  const rafRef     = useRef(null);   // holds current RAF handle
+  const enabledRef = useRef(enabled);
   const [webglOk, setWebglOk] = useState(true);
 
-  useEffect(() => {
-    if (!enabled) return;
+  // Keep a ref in sync so the draw loop always reads the latest value
+  useEffect(() => { enabledRef.current = enabled; }, [enabled]);
 
+  /* ── WebGL SETUP (runs once on mount) ─────────────────────────── */
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -183,11 +194,13 @@ function FluidCanvas({ enabled = true }) {
     const uMouse      = gl.getUniformLocation(prog, "uMouse");
     const uIsDark     = gl.getUniformLocation(prog, "uIsDark");
 
+    glRef.current = { gl, prog, vs, fs, buf, uTime, uResolution, uMouse, uIsDark };
+
     // Mouse in VIEWPORT coords — 0=top-left, no scroll dependency
     let mxS = 0.5, myS = 0.5, mxT = 0.5, myT = 0.5;
     const onMove = (e) => {
       mxT = e.clientX / window.innerWidth;
-      myT = e.clientY / window.innerHeight; // 0=top, 1=bottom — NO flip here, shader handles it
+      myT = e.clientY / window.innerHeight;
     };
     window.addEventListener("mousemove", onMove, { passive: true });
 
@@ -200,53 +213,30 @@ function FluidCanvas({ enabled = true }) {
     };
     window.addEventListener("resize", resize); resize();
 
-    const t0 = performance.now(); let raf;
+    const t0 = performance.now();
+
     const draw = () => {
-      raf = requestAnimationFrame(draw);
-      mxS += (mxT - mxS) * 0.055;
-      myS += (myT - myS) * 0.055;
-      const isDark = document.documentElement.classList.contains("dark") ? 1.0 : 0.0;
-      gl.uniform1f(uTime, (performance.now() - t0) * 0.001);
-      gl.uniform2f(uMouse, mxS, myS);
-      gl.uniform1f(uIsDark, isDark);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // Only render when enabled; otherwise park the loop
+      if (enabledRef.current) {
+        mxS += (mxT - mxS) * 0.055;
+        myS += (myT - myS) * 0.055;
+        const isDark = document.documentElement.classList.contains("dark") ? 1.0 : 0.0;
+        gl.uniform1f(uTime, (performance.now() - t0) * 0.001);
+        gl.uniform2f(uMouse, mxS, myS);
+        gl.uniform1f(uIsDark, isDark);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+      rafRef.current = requestAnimationFrame(draw);
     };
-    draw();
+    rafRef.current = requestAnimationFrame(draw);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(rafRef.current);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("resize", resize);
       gl.deleteProgram(prog); gl.deleteShader(vs); gl.deleteShader(fs); gl.deleteBuffer(buf);
     };
-  }, [enabled]);
-
-  if (!enabled) {
-    return (
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          width: "100vw",
-          height: "100vh",
-          pointerEvents: "none",
-          zIndex: 0,
-          overflow: "hidden",
-        }}
-      >
-        <div
-          className="w-full h-full bg-slate-100 dark:bg-[#060810] transition-colors duration-300"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 20% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 80% 75%, rgba(139, 92, 246, 0.07) 0%, transparent 55%),
-              radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.04) 0%, transparent 65%)
-            `,
-          }}
-        />
-      </div>
-    );
-  }
+  }, []); // ← runs ONCE on mount, no deps
 
   return (
     <div
@@ -260,15 +250,81 @@ function FluidCanvas({ enabled = true }) {
         overflow: "hidden",
       }}
     >
-      {webglOk ? (
-        <canvas
-          ref={canvasRef}
-          style={{ display: "block", width: "100%", height: "100%" }}
+      {/* ── AURORA PERFORMANCE BACKGROUND (REACT BITS) ────────────
+           Active and smooth when animations toggle is OFF (lag-free)  */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: enabled ? 0 : 1,
+          transition: "opacity 0.8s ease-in-out",
+          pointerEvents: "none",
+        }}
+      >
+        {/* Deep background responsive to dark/light theme */}
+        <div
+          className="absolute inset-0 bg-[#050810] dark:bg-[#050810] transition-colors duration-300"
+          style={{
+            background: "linear-gradient(135deg, #050810 0%, #080d1a 40%, #06101e 70%, #07080f 100%)",
+          }}
         />
-      ) : (
-        <div style={{ width: "100%", height: "100%", background: "#060810" }} />
-      )}
-      {/* soft edge vignette */}
+
+        {/* React Bits Aurora WebGL Canvas (ultra lightweight, 60fps) */}
+        <Aurora
+          active={!enabled}
+          colorStops={["#00d8ff", "#7cff67", "#5227FF"]}
+          amplitude={1.0}
+          blend={0.5}
+          speed={0.65}
+        />
+
+        {/* Subtle noise-like dot grid for tactile texture */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `radial-gradient(circle, rgba(99,210,255,0.14) 1px, transparent 1px)`,
+            backgroundSize: "28px 28px",
+            maskImage: "radial-gradient(ellipse 90% 75% at 50% 50%, black 20%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(ellipse 90% 75% at 50% 50%, black 20%, transparent 100%)",
+            opacity: 0.25,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Soft edge vignette */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "radial-gradient(ellipse 140% 120% at 50% 50%, transparent 40%, rgba(3,4,12,0.65) 100%)",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+
+
+      {/* ── WEBGL ANIMATED LAYER ───────────────────────────────────
+           Canvas always in DOM; opacity cross-fades on toggle         */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: enabled ? 1 : 0,
+          transition: "opacity 0.9s ease-in-out",
+        }}
+      >
+        {webglOk ? (
+          <canvas
+            ref={canvasRef}
+            style={{ display: "block", width: "100%", height: "100%" }}
+          />
+        ) : (
+          <div style={{ width: "100%", height: "100%", background: "#060810" }} />
+        )}
+      </div>
+
+      {/* ── Soft edge vignette (always present) ── */}
       <div
         style={{
           position: "absolute",
