@@ -345,3 +345,24 @@ html.light .custom-scrollbar::-webkit-scrollbar-thumb {
 html.light .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(8, 145, 178, 0.5);
 }
+
+/* ============================================================
+   PERFORMANCE MODE: REDUCE / DISABLE LAGGY ANIMATIONS
+============================================================ */
+html.disable-animations *,
+html.disable-animations *::before,
+html.disable-animations *::after {
+  animation: none !important;
+  transition-duration: 0.05s !important;
+}
+
+html.disable-animations .animate-ping,
+html.disable-animations .animate-pulse,
+html.disable-animations .animate-float,
+html.disable-animations .animate-marquee,
+html.disable-animations .animate-marquee-reverse,
+html.disable-animations .animate-active-glow,
+html.disable-animations .animate-dock-bounce,
+html.disable-animations .liquid-gradient-text {
+  animation: none !important;
+}

@@ -188,20 +188,21 @@ function DomainLabel({
         className={`
           flex
           items-center
-          gap-1.5
-          text-[11px]
+          gap-1
+          text-[10px]
           font-bold
+          sm:gap-1.5
           sm:text-xs
           md:text-sm
           ${colors.text}
         `}
       >
-        <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
 
         <span>{domain.label}</span>
       </div>
 
-      <span className="mt-1 font-mono text-[8px] tracking-wide text-neutral-500 dark:text-neutral-500 sm:text-[9px]">
+      <span className="mt-0.5 font-mono text-[7px] tracking-wide text-neutral-500 dark:text-neutral-400 sm:mt-1 sm:text-[8.5px]">
         {domain.sub}
       </span>
     </div>
@@ -282,12 +283,14 @@ export function SkillsVenn({ className = "" }) {
       {/* ======================================================
           CIRCLES
 
-          All four are now mathematically centered around
-          the same 50% vertical/horizontal axis.
+          All four circles are mathematically centered around (50%, 50%):
+          Frontend: (50%, 31.5%)
+          Systems: (50%, 68.5%)
+          Backend: (31.5%, 50%)
+          AI & Cloud: (68.5%, 50%)
       ====================================================== */}
 
       {/* FRONTEND */}
-
       <DomainCircle
         domain={DOMAINS.frontend}
         active={active}
@@ -302,7 +305,6 @@ export function SkillsVenn({ className = "" }) {
       />
 
       {/* BACKEND */}
-
       <DomainCircle
         domain={DOMAINS.backend}
         active={active}
@@ -310,14 +312,13 @@ export function SkillsVenn({ className = "" }) {
         onLeave={leave}
         className="
           left-[3%]
-          top-[27%]
+          top-[21.5%]
           h-[57%]
           w-[57%]
         "
       />
 
       {/* AI + CLOUD */}
-
       <DomainCircle
         domain={DOMAINS.ai}
         active={active}
@@ -325,14 +326,13 @@ export function SkillsVenn({ className = "" }) {
         onLeave={leave}
         className="
           right-[3%]
-          top-[27%]
+          top-[21.5%]
           h-[57%]
           w-[57%]
         "
       />
 
       {/* SYSTEMS + IOT */}
-
       <DomainCircle
         domain={DOMAINS.systems}
         active={active}
@@ -348,17 +348,11 @@ export function SkillsVenn({ className = "" }) {
 
       {/* ======================================================
           LABELS
-
-          These now use the actual circle centers:
-          Top    = 50%
-          Left   = 31.5%
-          Right  = 68.5%
-          Bottom = 50%
+          Evenly distributed in the outer crescents of each circle
       ====================================================== */}
 
       {/* FRONTEND */}
-
-      <div className="absolute left-[50%] top-[19%]">
+      <div className="absolute left-[50%] top-[14%]">
         <DomainLabel
           domain={DOMAINS.frontend}
           active={active}
@@ -368,8 +362,7 @@ export function SkillsVenn({ className = "" }) {
       </div>
 
       {/* BACKEND */}
-
-      <div className="absolute left-[31.5%] top-[50%]">
+      <div className="absolute left-[18%] top-[50%]">
         <DomainLabel
           domain={DOMAINS.backend}
           active={active}
@@ -379,8 +372,7 @@ export function SkillsVenn({ className = "" }) {
       </div>
 
       {/* AI + CLOUD */}
-
-      <div className="absolute left-[68.5%] top-[50%]">
+      <div className="absolute left-[82%] top-[50%]">
         <DomainLabel
           domain={DOMAINS.ai}
           active={active}
@@ -390,8 +382,7 @@ export function SkillsVenn({ className = "" }) {
       </div>
 
       {/* SYSTEMS */}
-
-      <div className="absolute left-[50%] top-[81%]">
+      <div className="absolute left-[50%] top-[86%]">
         <DomainLabel
           domain={DOMAINS.systems}
           active={active}
@@ -411,8 +402,8 @@ export function SkillsVenn({ className = "" }) {
           top-1/2
           z-40
           flex
-          h-[72px]
-          w-[72px]
+          h-[58px]
+          w-[58px]
           -translate-x-1/2
           -translate-y-1/2
           items-center
@@ -420,28 +411,27 @@ export function SkillsVenn({ className = "" }) {
           rounded-full
           border
           border-cyan-400/30
-          bg-white/90
-          shadow-[0_0_25px_rgba(34,211,238,0.14)]
+          bg-white/95
+          shadow-[0_0_25px_rgba(34,211,238,0.18)]
           backdrop-blur-xl
 
           dark:border-cyan-400/25
           dark:bg-[#09101c]/95
-          dark:shadow-[0_0_30px_rgba(34,211,238,0.15)]
+          dark:shadow-[0_0_30px_rgba(34,211,238,0.2)]
 
-          sm:h-[82px]
-          sm:w-[82px]
+          sm:h-[68px]
+          sm:w-[68px]
 
-          md:h-[88px]
-          md:w-[88px]
+          md:h-[76px]
+          md:w-[76px]
         "
       >
         {/* Inner ring */}
-
         <div
           className="
             pointer-events-none
             absolute
-            inset-1.5
+            inset-1
             rounded-full
             border
             border-cyan-500/15
@@ -450,17 +440,15 @@ export function SkillsVenn({ className = "" }) {
         />
 
         <div className="relative flex flex-col items-center">
+          <Sparkles className="mb-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 text-cyan-500 dark:text-cyan-400" />
 
-          <Sparkles className="mb-1 h-3.5 w-3.5 text-cyan-500 dark:text-cyan-400" />
-
-          <span className="font-mono text-sm font-extrabold tracking-[0.12em] text-neutral-900 dark:text-white">
+          <span className="font-mono text-xs sm:text-sm font-extrabold tracking-[0.12em] text-neutral-900 dark:text-white">
             CSE
           </span>
 
-          <span className="font-mono text-[7px] uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
+          <span className="font-mono text-[6.5px] sm:text-[7.5px] uppercase tracking-[0.22em] text-neutral-400 dark:text-neutral-500">
             REVA
           </span>
-
         </div>
       </div>
 

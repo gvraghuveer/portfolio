@@ -10,11 +10,18 @@ import {
   Moon,
   ExternalLink,
   ChevronUp,
+  Sparkles,
+  ZapOff,
 } from "lucide-react";
 import { Github } from "./Icons";
 import { profile } from "../data/profile";
 
-export function DockerMenu({ theme, toggleTheme }) {
+export function DockerMenu({
+  theme,
+  toggleTheme,
+  animationsEnabled = true,
+  toggleAnimations = () => {},
+}) {
   const [activeSection, setActiveSection] = useState("hero");
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [bouncingId, setBouncingId] = useState(null);
@@ -138,6 +145,16 @@ export function DockerMenu({ theme, toggleTheme }) {
     }, 550);
 
     toggleTheme();
+  };
+
+  const handleAnimationsClick = () => {
+    setBouncingId("animations");
+
+    window.setTimeout(() => {
+      setBouncingId(null);
+    }, 550);
+
+    toggleAnimations();
   };
 
   return (
@@ -555,6 +572,140 @@ export function DockerMenu({ theme, toggleTheme }) {
             dark:bg-white/[0.10]
           "
         />
+
+        {/* ======================================================
+            ANIMATIONS TOGGLE (PERFORMANCE MODE)
+        ====================================================== */}
+
+        <div
+          className="relative flex items-center justify-center"
+          onMouseEnter={() => setHoveredIndex("animations")}
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          {/* Tooltip */}
+          <div
+            className={`
+              pointer-events-none
+              absolute
+              -top-11
+              left-1/2
+              -translate-x-1/2
+              whitespace-nowrap
+              rounded-lg
+              border
+              px-2.5
+              py-1.5
+              text-[10px]
+              font-semibold
+              tracking-wide
+              shadow-xl
+              backdrop-blur-xl
+              transition-all
+              duration-200
+
+              ${
+                hoveredIndex === "animations"
+                  ? "translate-y-0 scale-100 opacity-100"
+                  : "translate-y-2 scale-90 opacity-0"
+              }
+
+              border-black/[0.08]
+              bg-white/90
+              text-neutral-800
+
+              dark:border-white/[0.10]
+              dark:bg-[#111622]/95
+              dark:text-neutral-200
+            `}
+          >
+            {animationsEnabled ? "Animations: ON (Smooth)" : "Animations: OFF (Fast / Low Lag)"}
+
+            <div
+              className="
+                absolute
+                -bottom-1
+                left-1/2
+                h-2
+                w-2
+                -translate-x-1/2
+                rotate-45
+                border-r
+                border-b
+                border-black/[0.08]
+                bg-white/90
+                dark:border-white/[0.10]
+                dark:bg-[#111622]
+              "
+            />
+          </div>
+
+          {/* Animations button */}
+          <button
+            type="button"
+            onClick={handleAnimationsClick}
+            aria-label={animationsEnabled ? "Disable heavy animations for performance" : "Enable animations"}
+            className={`
+              group
+              relative
+              flex
+              h-10
+              w-10
+              items-center
+              justify-center
+              rounded-xl
+              border
+              border-transparent
+              text-neutral-500
+              transition-all
+              duration-300
+
+              hover:border-black/[0.05]
+              hover:bg-black/[0.035]
+              hover:text-neutral-950
+
+              dark:text-neutral-500
+              dark:hover:border-white/[0.06]
+              dark:hover:bg-white/[0.05]
+              dark:hover:text-white
+
+              sm:h-11
+              sm:w-11
+              sm:rounded-[0.9rem]
+
+              ${
+                bouncingId === "animations"
+                  ? "animate-dock-bounce"
+                  : ""
+              }
+            `}
+          >
+            {animationsEnabled ? (
+              <span className="relative flex items-center justify-center">
+                <Sparkles className="h-[17px] w-[17px] text-cyan-500 transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" />
+                <span className="absolute -top-1 -right-1 h-1.5 w-1.5 rounded-full bg-cyan-400 ring-2 ring-white dark:ring-[#090d17]" />
+              </span>
+            ) : (
+              <span className="relative flex items-center justify-center">
+                <ZapOff className="h-[17px] w-[17px] text-neutral-400 transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" />
+              </span>
+            )}
+
+            <span
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                rounded-xl
+                bg-cyan-400/[0.05]
+                opacity-0
+                blur-md
+                transition-opacity
+                duration-300
+                group-hover:opacity-100
+              "
+            />
+          </button>
+        </div>
 
         {/* ======================================================
             THEME TOGGLE

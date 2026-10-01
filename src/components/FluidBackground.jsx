@@ -136,11 +136,13 @@ const FRAGMENT_SHADER = `
   }
 `;
 
-function FluidCanvas() {
+function FluidCanvas({ enabled = true }) {
   const canvasRef = useRef(null);
   const [webglOk, setWebglOk] = useState(true);
 
   useEffect(() => {
+    if (!enabled) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -217,7 +219,34 @@ function FluidCanvas() {
       window.removeEventListener("resize", resize);
       gl.deleteProgram(prog); gl.deleteShader(vs); gl.deleteShader(fs); gl.deleteBuffer(buf);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100vw",
+          height: "100vh",
+          pointerEvents: "none",
+          zIndex: 0,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          className="w-full h-full bg-slate-100 dark:bg-[#060810] transition-colors duration-300"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 20% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+              radial-gradient(circle at 80% 75%, rgba(139, 92, 246, 0.07) 0%, transparent 55%),
+              radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.04) 0%, transparent 65%)
+            `,
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -254,9 +283,9 @@ function FluidCanvas() {
 }
 
 // Portal → renders directly in document.body, escaping any overflow:hidden ancestor
-export function FluidBackground() {
+export function FluidBackground({ enabled = true }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   if (!mounted) return null;
-  return createPortal(<FluidCanvas />, document.body);
+  return createPortal(<FluidCanvas enabled={enabled} />, document.body);
 }

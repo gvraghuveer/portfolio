@@ -109,25 +109,25 @@ export const projects = [
     accent: "from-emerald-500 to-teal-600",
     previewType: "scraper"
   },
-  {
-    id: "avengers-watchlist",
-    title: "Avengers Watchlist",
-    subtitle: "React web app with dynamic content, API integration and interactive frontend",
-    category: "Web & API Architecture",
-    badge: "React App",
-    technologies: ["React", "JavaScript", "HTML", "CSS", "APIs"],
-    description:
-      "A React-based web application focused on dynamic content and interactive frontend functionality. Involves working with React components, JavaScript, application data, API-based functionality, and responsive interfaces — built as a practical exercise in modern React development patterns and external API integration.",
-    stats: [
-      { label: "Framework", value: "React" },
-      { label: "Data", value: "API-Driven" },
-      { label: "Language", value: "JavaScript" },
-      { label: "Type", value: "Web App" }
-    ],
-    github: "https://github.com/gvraghuveer/avengers-watchlist",
-    demo: "https://avengers-watchlist.vercel.app/",
-    accent: "from-blue-500 to-cyan-500",
-    previewType: "media"
-  }
+  // {
+  //   id: "avengers-watchlist",
+  //   title: "Avengers Watchlist",
+  //   subtitle: "React web app with dynamic content, API integration and interactive frontend",
+  //   category: "Web & API Architecture",
+  //   badge: "React App",
+  //   technologies: ["React", "JavaScript", "HTML", "CSS", "APIs"],
+  //   description:
+  //     "A React-based web application focused on dynamic content and interactive frontend functionality. Involves working with React components, JavaScript, application data, API-based functionality, and responsive interfaces — built as a practical exercise in modern React development patterns and external API integration.",
+  //   stats: [
+  //     { label: "Framework", value: "React" },
+  //     { label: "Data", value: "API-Driven" },
+  //     { label: "Language", value: "JavaScript" },
+  //     { label: "Type", value: "Web App" }
+  //   ],
+  //   github: "https://github.com/gvraghuveer/avengers-watchlist",
+  //   demo: "https://avengers-watchlist.vercel.app/",
+  //   accent: "from-blue-500 to-cyan-500",
+  //   previewType: "media"
+  // }
 ];
 

@@ -40,18 +40,6 @@ const panelMeta = {
     ring: "border-blue-500/35 dark:border-blue-500/30",
     iconBg: "from-blue-600 to-cyan-500",
   },
-
-  mediforge: {
-    icon: FlaskConical,
-    label: "Research Initiative",
-    eyebrow: "AI + RESEARCH",
-    color:
-      "from-rose-500/75 via-pink-500/65 to-violet-500/75 dark:from-rose-500/30 dark:via-pink-500/20 dark:to-violet-500/20",
-    glow: "bg-rose-500/20",
-    ring: "border-rose-500/35 dark:border-rose-500/30",
-    iconBg: "from-rose-600 to-pink-500",
-  },
-
   aethercode: {
     icon: Code2,
     label: "AI Developer Tooling",
@@ -61,17 +49,6 @@ const panelMeta = {
     glow: "bg-violet-500/20",
     ring: "border-violet-500/35 dark:border-violet-500/30",
     iconBg: "from-violet-600 to-indigo-500",
-  },
-
-  helioforge: {
-    icon: BrainCircuit,
-    label: "AI Engineering",
-    eyebrow: "AI SYSTEMS",
-    color:
-      "from-fuchsia-500/75 via-violet-500/65 to-blue-500/75 dark:from-fuchsia-500/30 dark:via-violet-500/20 dark:to-blue-500/20",
-    glow: "bg-fuchsia-500/20",
-    ring: "border-fuchsia-500/35 dark:border-fuchsia-500/30",
-    iconBg: "from-fuchsia-600 to-violet-500",
   },
 
   crimeshield: {
@@ -107,24 +84,23 @@ const panelMeta = {
     iconBg: "from-emerald-600 to-teal-500",
   },
 
-  "avengers-watchlist": {
-    icon: TvMinimalPlay,
-    label: "Web Application",
-    eyebrow: "WEB DEVELOPMENT",
-    color:
-      "from-purple-500/75 via-violet-500/65 to-fuchsia-500/75 dark:from-purple-500/30 dark:via-violet-500/20 dark:to-fuchsia-500/20",
-    glow: "bg-purple-500/20",
-    ring: "border-purple-500/35 dark:border-purple-500/30",
-    iconBg: "from-purple-600 to-violet-500",
-  },
+  // "avengers-watchlist": {
+  //   icon: TvMinimalPlay,
+  //   label: "Web Application",
+  //   eyebrow: "WEB DEVELOPMENT",
+  //   color:
+  //     "from-purple-500/75 via-violet-500/65 to-fuchsia-500/75 dark:from-purple-500/30 dark:via-violet-500/20 dark:to-fuchsia-500/20",
+  //   glow: "bg-purple-500/20",
+  //   ring: "border-purple-500/35 dark:border-purple-500/30",
+  //   iconBg: "from-purple-600 to-violet-500",
+  // },
 };
 
 const fallbackMeta = {
   icon: Layers,
   label: "Software Project",
   eyebrow: "ENGINEERING",
-  color:
-    "from-cyan-500/30 via-violet-500/20 to-blue-600/20",
+  color: "from-cyan-500/30 via-violet-500/20 to-blue-600/20",
   glow: "bg-cyan-500/20",
   ring: "border-cyan-500/30",
   iconBg: "from-cyan-500 to-violet-500",
@@ -146,8 +122,7 @@ export function ProjectCarousel() {
 
   const currentProject = projects[currentIndex];
 
-  const meta =
-    panelMeta[currentProject?.id] ?? fallbackMeta;
+  const meta = panelMeta[currentProject?.id] ?? fallbackMeta;
 
   const PanelIcon = meta.icon;
 
@@ -169,26 +144,19 @@ export function ProjectCarousel() {
         setIsVisible(true);
       }, 220);
     },
-    [currentIndex]
+    [currentIndex],
   );
 
   const nextSlide = useCallback(() => {
     if (!projects.length) return;
 
-    goTo(
-      (currentIndex + 1) % projects.length,
-      "next"
-    );
+    goTo((currentIndex + 1) % projects.length, "next");
   }, [currentIndex, goTo]);
 
   const prevSlide = useCallback(() => {
     if (!projects.length) return;
 
-    goTo(
-      (currentIndex - 1 + projects.length) %
-        projects.length,
-      "prev"
-    );
+    goTo((currentIndex - 1 + projects.length) % projects.length, "prev");
   }, [currentIndex, goTo]);
 
   /* =======================================================
@@ -204,43 +172,53 @@ export function ProjectCarousel() {
     setProgress(0);
 
     const tick = (now) => {
-      const elapsed =
-        now - startTimeRef.current;
+      const elapsed = now - startTimeRef.current;
 
-      const percentage = Math.min(
-        (elapsed / AUTOPLAY_MS) * 100,
-        100
-      );
+      const percentage = Math.min((elapsed / AUTOPLAY_MS) * 100, 100);
 
       setProgress(percentage);
 
       if (percentage < 100) {
-        progressRef.current =
-          requestAnimationFrame(tick);
+        progressRef.current = requestAnimationFrame(tick);
       } else {
         nextSlide();
       }
     };
 
-    progressRef.current =
-      requestAnimationFrame(tick);
+    progressRef.current = requestAnimationFrame(tick);
 
     return () => {
       if (progressRef.current) {
-        cancelAnimationFrame(
-          progressRef.current
-        );
+        cancelAnimationFrame(progressRef.current);
       }
     };
-  }, [
-    currentIndex,
-    isPaused,
-    nextSlide,
-  ]);
+  }, [currentIndex, isPaused, nextSlide]);
 
   /* =======================================================
-     KEYBOARD
+     KEYBOARD & TOUCH
   ======================================================= */
+
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches[0]) {
+      touchStartX.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    if (e.changedTouches && e.changedTouches[0]) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchStartX.current - touchEndX;
+      if (diff > 45) {
+        nextSlide();
+      } else if (diff < -45) {
+        prevSlide();
+      }
+    }
+    touchStartX.current = null;
+  };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -258,16 +236,10 @@ export function ProjectCarousel() {
       }
     };
 
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [nextSlide, prevSlide]);
 
@@ -287,15 +259,12 @@ export function ProjectCarousel() {
       ===================================================== */}
 
       <div className="relative w-full">
-
         {/* ===================================================
             HEADER
         =================================================== */}
 
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-7">
-
           <div className="max-w-2xl">
-
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/[0.08] border border-cyan-500/20 text-cyan-600 dark:text-cyan-400 text-[10px] font-mono tracking-wide mb-4">
               <Sparkles className="w-3.5 h-3.5" />
               <span>SELECTED WORK</span>
@@ -309,10 +278,8 @@ export function ProjectCarousel() {
             </h2>
 
             <p className="mt-4 text-sm text-neutral-600 dark:text-[#A1A1AA] leading-relaxed max-w-xl">
-              A collection of software, AI, cloud,
-              cybersecurity, IoT, and research
-              projects built across different areas
-              of engineering.
+              A collection of software, AI, cloud, cybersecurity, IoT, and
+              research projects built across different areas of engineering.
             </p>
           </div>
 
@@ -321,7 +288,6 @@ export function ProjectCarousel() {
           ================================================= */}
 
           <div className="flex items-center gap-2 shrink-0">
-
             <div className="mr-2 hidden sm:block">
               <div className="text-[9px] uppercase tracking-widest font-mono text-neutral-400 dark:text-[#52525B]">
                 PROJECT
@@ -329,37 +295,20 @@ export function ProjectCarousel() {
 
               <div className="font-mono text-sm text-neutral-800 dark:text-[#D4D4D8]">
                 <span className="text-cyan-500 font-bold">
-                  {String(
-                    currentIndex + 1
-                  ).padStart(2, "0")}
+                  {String(currentIndex + 1).padStart(2, "0")}
                 </span>
 
-                <span className="mx-1 text-neutral-400">
-                  /
-                </span>
+                <span className="mx-1 text-neutral-400">/</span>
 
-                {String(projects.length).padStart(
-                  2,
-                  "0"
-                )}
+                {String(projects.length).padStart(2, "0")}
               </div>
             </div>
 
             <button
-              onClick={() =>
-                setIsPaused((prev) => !prev)
-              }
+              onClick={() => setIsPaused((prev) => !prev)}
               className="w-9 h-9 rounded-lg glass-card flex items-center justify-center border border-neutral-200/80 dark:border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/[0.06] transition-all"
-              title={
-                isPaused
-                  ? "Resume autoplay"
-                  : "Pause autoplay"
-              }
-              aria-label={
-                isPaused
-                  ? "Resume autoplay"
-                  : "Pause autoplay"
-              }
+              title={isPaused ? "Resume autoplay" : "Pause autoplay"}
+              aria-label={isPaused ? "Resume autoplay" : "Pause autoplay"}
             >
               {isPaused ? (
                 <Play className="w-3.5 h-3.5 text-cyan-500" />
@@ -406,6 +355,8 @@ export function ProjectCarousel() {
         =================================================== */}
 
         <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible
@@ -413,12 +364,10 @@ export function ProjectCarousel() {
               : animDir === "next"
                 ? "translateX(-20px)"
                 : "translateX(20px)",
-            transition:
-              "opacity 220ms ease, transform 220ms ease",
+            transition: "opacity 220ms ease, transform 220ms ease",
           }}
         >
           <div className="relative rounded-[1.5rem] overflow-hidden border border-neutral-200/80 dark:border-white/[0.08] bg-white/60 dark:bg-[#09090B]/80 backdrop-blur-xl shadow-[0_25px_80px_rgba(0,0,0,0.07)] dark:shadow-[0_25px_80px_rgba(0,0,0,0.5)] lg:h-[590px]">
-
             {/* Project glow */}
 
             <div
@@ -426,23 +375,17 @@ export function ProjectCarousel() {
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 h-full relative z-10">
-
               {/* =================================================
                   LEFT CONTENT
               ================================================= */}
 
               <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col min-h-0">
-
                 {/* Header row */}
 
                 <div className="flex items-center justify-between mb-6 shrink-0">
-
                   <div className="flex items-center gap-3">
-
                     <span className="font-mono text-[10px] text-cyan-500 tracking-widest">
-                      {String(
-                        currentIndex + 1
-                      ).padStart(2, "0")}
+                      {String(currentIndex + 1).padStart(2, "0")}
                     </span>
 
                     <div className="w-7 h-px bg-neutral-300 dark:bg-white/10" />
@@ -461,7 +404,6 @@ export function ProjectCarousel() {
                 {/* Badge */}
 
                 <div className="inline-flex self-start items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-500/[0.08] border border-cyan-500/20 mb-4 shrink-0">
-
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
 
                   <span className="text-[9px] font-mono font-semibold text-cyan-600 dark:text-cyan-400">
@@ -472,7 +414,6 @@ export function ProjectCarousel() {
                 {/* Title */}
 
                 <div className="space-y-2 shrink-0">
-
                   <h3 className="text-2xl sm:text-3xl lg:text-[2.1rem] font-black tracking-[-0.035em] text-neutral-900 dark:text-[#F4F4F5] leading-[1.05]">
                     {currentProject.title}
                   </h3>
@@ -497,23 +438,20 @@ export function ProjectCarousel() {
                 ================================================= */}
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-5 shrink-0">
-
-                  {currentProject.stats.map(
-                    (stat) => (
-                      <div
-                        key={stat.label}
-                        className="p-2.5 rounded-lg bg-neutral-50/80 dark:bg-white/[0.025] border border-neutral-200/70 dark:border-white/[0.06] hover:border-cyan-500/20 transition-colors"
-                      >
-                        <div className="text-[8px] uppercase tracking-widest font-mono text-neutral-400 dark:text-[#52525B] mb-1">
-                          {stat.label}
-                        </div>
-
-                        <div className="text-[11px] font-semibold text-neutral-900 dark:text-[#E4E4E7] truncate">
-                          {stat.value}
-                        </div>
+                  {currentProject.stats.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="p-2.5 rounded-lg bg-neutral-50/80 dark:bg-white/[0.025] border border-neutral-200/70 dark:border-white/[0.06] hover:border-cyan-500/20 transition-colors"
+                    >
+                      <div className="text-[8px] uppercase tracking-widest font-mono text-neutral-400 dark:text-[#52525B] mb-1">
+                        {stat.label}
                       </div>
-                    )
-                  )}
+
+                      <div className="text-[11px] font-semibold text-neutral-900 dark:text-[#E4E4E7] truncate">
+                        {stat.value}
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 {/* =================================================
@@ -521,23 +459,19 @@ export function ProjectCarousel() {
                 ================================================= */}
 
                 <div className="mt-5 pt-4 border-t border-neutral-200/80 dark:border-white/[0.06]">
-
                   <div className="text-[8px] uppercase tracking-[0.2em] font-mono text-neutral-400 dark:text-[#52525B] mb-2.5">
                     TECH STACK
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 max-h-[58px] overflow-hidden">
-
-                    {currentProject.technologies.map(
-                      (technology) => (
-                        <span
-                          key={technology}
-                          className="px-2 py-1 rounded-md bg-neutral-100 dark:bg-white/[0.035] border border-neutral-200 dark:border-white/[0.08] text-[9px] font-mono text-neutral-700 dark:text-[#D4D4D8] hover:border-cyan-500/30 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors"
-                        >
-                          {technology}
-                        </span>
-                      )
-                    )}
+                    {currentProject.technologies.map((technology) => (
+                      <span
+                        key={technology}
+                        className="px-2 py-1 rounded-md bg-neutral-100 dark:bg-white/[0.035] border border-neutral-200 dark:border-white/[0.08] text-[9px] font-mono text-neutral-700 dark:text-[#D4D4D8] hover:border-cyan-500/30 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors"
+                      >
+                        {technology}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
@@ -546,7 +480,6 @@ export function ProjectCarousel() {
                 ================================================= */}
 
                 <div className="flex flex-wrap gap-2.5 mt-auto pt-5">
-
                   {currentProject.github && (
                     <a
                       href={currentProject.github}
@@ -556,9 +489,7 @@ export function ProjectCarousel() {
                     >
                       <Github className="w-3.5 h-3.5" />
 
-                      <span>
-                        View Repository
-                      </span>
+                      <span>View Repository</span>
 
                       <ArrowUpRight className="w-3 h-3 opacity-50 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </a>
@@ -573,9 +504,7 @@ export function ProjectCarousel() {
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
 
-                      <span>
-                        Live Demo
-                      </span>
+                      <span>Live Demo</span>
 
                       <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </a>
@@ -588,7 +517,6 @@ export function ProjectCarousel() {
               ================================================= */}
 
               <div className="lg:col-span-5 p-4 sm:p-6 lg:p-7 flex min-h-[300px] lg:min-h-0">
-
                 <div
                   className={`
                     relative
@@ -605,7 +533,6 @@ export function ProjectCarousel() {
                     justify-center
                   `}
                 >
-
                   {/* Grid */}
 
                   <div className="absolute inset-0 opacity-[0.07]">
@@ -614,8 +541,7 @@ export function ProjectCarousel() {
                       style={{
                         backgroundImage:
                           "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-                        backgroundSize:
-                          "28px 28px",
+                        backgroundSize: "28px 28px",
                       }}
                     />
                   </div>
@@ -642,13 +568,8 @@ export function ProjectCarousel() {
 
                   <div className="absolute right-5 top-5 rounded-lg border border-black/10 bg-black/5 px-3 py-2 backdrop-blur-sm dark:border-white/10 dark:bg-black/10">
                     <span className="font-mono text-[9px] font-semibold text-slate-700 dark:text-white/45">
-                      {String(
-                        currentIndex + 1
-                      ).padStart(2, "0")}
-                      /
-                      {String(
-                        projects.length
-                      ).padStart(2, "0")}
+                      {String(currentIndex + 1).padStart(2, "0")}/
+                      {String(projects.length).padStart(2, "0")}
                     </span>
                   </div>
 
@@ -657,8 +578,8 @@ export function ProjectCarousel() {
                   <div
                     className={`
                       relative
-                      p-6
-                      rounded-[1.5rem]
+                      p-5
+                      rounded-[1.25rem]
                       bg-gradient-to-br
                       ${meta.iconBg}
                       shadow-[0_15px_45px_rgba(0,0,0,0.3)]
@@ -666,25 +587,126 @@ export function ProjectCarousel() {
                       ring-white/20
                     `}
                   >
-                    <PanelIcon className="w-12 h-12 sm:w-14 sm:h-14 text-white drop-shadow-lg" />
+                    <PanelIcon className="w-10 h-10 sm:w-12 sm:h-12 text-white drop-shadow-lg" />
                   </div>
 
-                  {/* Domain title */}
+                  {/* Project Showcase Title & Identity */}
 
-                  <p className="mt-6 font-mono text-[9px] font-semibold tracking-[0.25em] text-slate-600 uppercase dark:text-white/45">
-                    PROJECT DOMAIN
+                  <p className="mt-4 font-mono text-[9px] font-semibold tracking-[0.25em] text-cyan-500 dark:text-cyan-400 uppercase">
+                    {meta.eyebrow}
                   </p>
 
-                  <h3 className="mt-3 max-w-[300px] text-center text-lg font-semibold leading-tight tracking-tight text-slate-950 sm:text-xl dark:text-white">
-                    {meta.label}
+                  <h3 className="mt-1.5 max-w-[320px] text-center text-lg sm:text-xl font-extrabold leading-tight tracking-tight text-slate-950 dark:text-white">
+                    {currentProject.title}
                   </h3>
 
-                  {/* Technology preview */}
+                  <p className="mt-0.5 font-mono text-[10px] text-slate-600 dark:text-neutral-400 text-center">
+                    {currentProject.subtitle}
+                  </p>
 
-                  <div className="relative flex flex-wrap justify-center gap-1.5 max-w-xs px-5 mt-5">
+                  {/* Specialized Live Preview Showcase Card */}
+                  {currentProject.id === "avengers-watchlist" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] font-mono text-rose-300">
+                        <span className="font-bold tracking-wider">MARVEL MCU WATCHLIST</span>
+                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          LIVE DEMO
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.08] px-2 py-1.5 rounded-lg text-[9px] text-white">
+                        <span className="font-semibold truncate">Avengers: Endgame (2019)</span>
+                        <span className="text-amber-400 font-mono text-[8px]">★ 8.4</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.04] px-2 py-1.5 rounded-lg text-[9px] text-neutral-300">
+                        <span className="truncate">Avengers: Infinity War</span>
+                        <span className="text-amber-400 font-mono text-[8px]">★ 8.5</span>
+                      </div>
+                    </div>
+                  )}
 
+                  {currentProject.id === "s3-drive" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left font-mono shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] text-cyan-400">
+                        <span>s3://raghu-cloud-drive</span>
+                        <span className="text-cyan-300 font-semibold">AWS S3</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.08] px-2 py-1.5 rounded-lg text-[9px] text-white">
+                        <span className="truncate">📄 architecture_spec.pdf</span>
+                        <span className="text-[8px] text-cyan-400">Pre-signed</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.04] px-2 py-1.5 rounded-lg text-[9px] text-neutral-300">
+                        <span className="truncate">📦 data_pipeline.tar</span>
+                        <span className="text-[8px] text-emerald-400">Synced</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentProject.id === "chakravyuh" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left font-mono shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] text-cyan-400">
+                        <span>BLOCKCHAIN MULTI-HOP TRACER</span>
+                        <span className="text-rose-400 font-semibold">98% FRAUD</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.08] px-2 py-1.5 rounded-lg text-[9px] text-white">
+                        <span className="truncate">0x71a...e4b → Polygon</span>
+                        <span className="text-[8px] text-indigo-300">Bridge</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.04] px-2 py-1.5 rounded-lg text-[9px] text-neutral-300">
+                        <span className="truncate">Target VASP Endpoint</span>
+                        <span className="text-[8px] text-emerald-400">Traced</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentProject.id === "crimeshield" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left font-mono shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] text-rose-400">
+                        <span>ESP32-CAM STREAM</span>
+                        <span className="text-emerald-400 font-semibold animate-pulse">● ACTIVE</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.08] px-2 py-1.5 rounded-lg text-[9px] text-white">
+                        <span>YOLO Detection: Person</span>
+                        <span className="text-[8px] text-emerald-400">96.4%</span>
+                      </div>
+                      <div className="flex items-center justify-between bg-white/[0.04] px-2 py-1.5 rounded-lg text-[9px] text-neutral-300">
+                        <span className="text-[8px]">GPS: 13.1147° N, 77.6346° E</span>
+                        <span className="text-[8px] text-amber-400">Fixed</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentProject.id === "aethercode" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left font-mono text-[8.5px] shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] text-purple-400">
+                        <span>// AI Code Synthesis</span>
+                        <span className="text-cyan-400">Assisted</span>
+                      </div>
+                      <div className="bg-white/[0.08] p-2 rounded-lg text-neutral-200">
+                        <span className="text-cyan-400">def</span> <span className="text-amber-300">synthesize_flow</span>():
+                        <div className="text-emerald-400 pl-2">return optimize_ast(node)</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentProject.id === "web-scraper" && (
+                    <div className="w-full max-w-[280px] mt-3.5 p-2.5 rounded-xl bg-black/40 border border-white/10 backdrop-blur-md space-y-1.5 text-left font-mono text-[8.5px] shadow-lg">
+                      <div className="flex items-center justify-between text-[8px] text-emerald-400">
+                        <span>DOCKER PIPELINE</span>
+                        <span className="text-cyan-400">Linux</span>
+                      </div>
+                      <div className="bg-white/[0.08] p-2 rounded-lg text-neutral-200">
+                        <span className="text-neutral-400">$</span> python worker.py --scrape
+                        <div className="text-emerald-400 text-[8px]">✓ 1,420 records parsed</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Technology preview tags */}
+
+                  <div className="relative flex flex-wrap justify-center gap-1.5 max-w-xs px-5 mt-4">
                     {currentProject.technologies
-                      .slice(0, 5)
+                      .slice(0, 4)
                       .map((technology) => (
                         <span
                           key={technology}
@@ -694,12 +716,9 @@ export function ProjectCarousel() {
                         </span>
                       ))}
 
-                    {currentProject.technologies
-                      ?.length > 5 && (
+                    {currentProject.technologies?.length > 4 && (
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-2.5 py-1 font-mono text-[9px] font-semibold text-slate-700 backdrop-blur-sm dark:border-white/10 dark:bg-black/10 dark:text-white/60">
-                        +
-                        {currentProject.technologies.length -
-                          5}
+                        +{currentProject.technologies.length - 4}
                       </span>
                     )}
                   </div>
@@ -707,7 +726,6 @@ export function ProjectCarousel() {
                   {/* Status */}
 
                   <div className="absolute bottom-5 left-5 flex items-center gap-2">
-
                     <span className="size-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
 
                     <span className="font-mono text-[8px] font-semibold tracking-[0.18em] text-slate-700 uppercase dark:text-white/35">

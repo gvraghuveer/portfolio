@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Copy, Check, Send } from "lucide-react";
+import { Mail, Copy, Check, Send, Loader2, AlertCircle, ExternalLink } from "lucide-react";
 import { Github, Linkedin } from "./Icons";
 import { Section } from "./Section";
 import { profile } from "../data/profile";
@@ -7,7 +7,8 @@ import { profile } from "../data/profile";
 export function Contact() {
   const [copied, setCopied] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle"); // 'idle' | 'submitting' | 'success' | 'error'
+  const [errorMessage, setErrorMessage] = useState("");
 
   const copyEmail = () => {
     navigator.clipboard.writeText(profile.social.email);
@@ -15,13 +16,46 @@ export function Contact() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => {
-      setSent(false);
-      setFormData({ name: "", email: "", message: "" });
-    }, 3000);
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      return;
+    }
+
+    setStatus("submitting");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/gvraghuveer07@gmail.com", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          _subject: `Portfolio Message from ${formData.name}`,
+          _template: "table",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && (data.success === "true" || data.success === true)) {
+        setStatus("success");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        throw new Error(data.message || "Failed to deliver message");
+      }
+    } catch (err) {
+      console.warn("Contact form submit error:", err);
+      setStatus("error");
+      setErrorMessage(
+        "Could not send automatically (network/adblocker). Please click below to send via your email client."
+      );
+    }
   };
 
   return (
@@ -99,70 +133,110 @@ export function Contact() {
         </div>
 
         {/* Right Column: Quick Contact Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 sm:p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/60 dark:bg-neutral-900/40 backdrop-blur-md space-y-3"
-        >
-          <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
-              Your Name
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g. Alex"
-              className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600"
-            />
-          </div>
+        <div className="p-4 sm:p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/60 dark:bg-neutral-900/40 backdrop-blur-md">
+          {status === "success" ? (
+            <div className="py-8 px-4 flex flex-col items-center justify-center text-center space-y-3">
+              <div className="size-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+                <Check className="size-6" />
+              </div>
+              <h4 className="text-base font-bold text-neutral-900 dark:text-white">
+                Message Sent Successfully!
+              </h4>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 max-w-xs leading-relaxed">
+                Thank you for reaching out. Your inquiry was delivered directly to Raghuveer's inbox.
+              </p>
+              <button
+                type="button"
+                onClick={() => setStatus("idle")}
+                className="mt-2 text-xs font-mono font-semibold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer"
+              >
+                Send another message →
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  disabled={status === "submitting"}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Alex"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:focus:ring-cyan-400 disabled:opacity-50"
+                />
+              </div>
 
-          <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
-              Your Email
-            </label>
-            <input
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="alex@example.com"
-              className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600"
-            />
-          </div>
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  disabled={status === "submitting"}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="alex@example.com"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:focus:ring-cyan-400 disabled:opacity-50"
+                />
+              </div>
 
-          <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
-              Message
-            </label>
-            <textarea
-              rows={3}
-              required
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Hello Raghuveer, I would like to discuss..."
-              className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600 resize-none"
-            />
-          </div>
+              <div>
+                <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
+                  Message
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  disabled={status === "submitting"}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Hello Raghuveer, I would like to discuss..."
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-950/70 text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:focus:ring-cyan-400 resize-none disabled:opacity-50"
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={sent}
-            className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
-          >
-            {sent ? (
-              <>
-                <Check className="size-3.5" />
-                <span>Message Received!</span>
-              </>
-            ) : (
-              <>
-                <Send className="size-3.5" />
-                <span>Send Direct Inquiry</span>
-              </>
-            )}
-          </button>
-        </form>
+              {status === "error" && (
+                <div className="p-3 rounded-lg border border-rose-500/20 bg-rose-500/[0.08] text-rose-500 text-[11px] space-y-2">
+                  <div className="flex items-center gap-1.5 font-medium">
+                    <AlertCircle className="size-3.5 shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                  <a
+                    href={`mailto:${profile.social.email}?subject=${encodeURIComponent(
+                      `Portfolio Inquiry from ${formData.name || "Visitor"}`
+                    )}&body=${encodeURIComponent(formData.message || "")}`}
+                    className="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400 underline underline-offset-2"
+                  >
+                    Open in default mail client <ExternalLink className="size-3" />
+                  </a>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "submitting"}
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                {status === "submitting" ? (
+                  <>
+                    <Loader2 className="size-3.5 animate-spin" />
+                    <span>Sending Inquiry...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="size-3.5" />
+                    <span>Send Direct Inquiry</span>
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </Section>
   );
