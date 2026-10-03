@@ -8,6 +8,6 @@ import tailwindcss from "@tailwindcss/vite";
 // });
 
 export default defineConfig({
-  base: "/portfolio/",
+  base: process.env.GITHUB_ACTIONS ? "/portfolio/" : "/",
   plugins: [react(), tailwindcss()],
-})
+});
